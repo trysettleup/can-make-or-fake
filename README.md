@@ -1,68 +1,75 @@
-# :package_description
+# CanMakeOrFake
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/settleup/can-make-or-fake.svg?style=flat-square)](https://packagist.org/packages/settleup/can-make-or-fake)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/settleup/can-make-or-fake/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/settleup/can-make-or-fake/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/settleup/can-make-or-fake.svg?style=flat-square)](https://packagist.org/packages/settleup/can-make-or-fake)
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+A lightweight Laravel trait that gives any class a `make()` static constructor (resolved through the container) and a `fake()` method for easy test mocking.
 
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+> **Note:** This package is currently in `0.x` and the API may change before a stable `1.0` release.
 
 ## Installation
 
-You can install the package via composer:
-
 ```bash
-composer require :vendor_slug/:package_slug
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
+composer require settleup/can-make-or-fake
 ```
 
 ## Usage
 
+Add the `CanMakeOrFake` trait to any class:
+
 ```php
-$:variable = new VendorName\Skeleton();
-echo $:variable->echoPhrase('Hello, VendorName!');
+use SettleUp\CanMakeOrFake\CanMakeOrFake;
+
+class PriceCalculator
+{
+    use CanMakeOrFake;
+
+    public function calculate(int $quantity, int $unitPrice): int
+    {
+        return $quantity * $unitPrice;
+    }
+}
+```
+
+### Resolving instances with `make()`
+
+`make()` resolves the class through Laravel's service container, so any constructor dependencies are automatically injected:
+
+```php
+$calculator = PriceCalculator::make();
+
+$total = $calculator->calculate(quantity: 3, unitPrice: 500); // 1500
+```
+
+### Faking in tests with `fake()`
+
+`fake()` creates a Mockery partial mock and binds it into the container. Any subsequent call to `make()` (or container resolution) will return the mock:
+
+```php
+use Mockery\MockInterface;
+
+PriceCalculator::fake(function (MockInterface $mock) {
+    $mock->shouldReceive('calculate')->andReturn(0);
+});
+
+// Anywhere in your application that resolves PriceCalculator will now get the fake
+$calculator = PriceCalculator::make();
+$calculator->calculate(3, 500); // 0
+```
+
+Because `fake()` creates a partial mock, any methods you don't explicitly mock will still call the real implementation.
+
+### Conditionable
+
+The trait includes Laravel's `Conditionable` trait, so you can use `when()` and `unless()`:
+
+```php
+$calculator = PriceCalculator::make();
+
+$calculator->when($applyDiscount, function (PriceCalculator $calc) {
+    // ...
+});
 ```
 
 ## Testing
@@ -85,7 +92,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [Andrew Leach](https://github.com/andyleach)
 - [All Contributors](../../contributors)
 
 ## License
