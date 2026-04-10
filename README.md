@@ -6,8 +6,6 @@
 
 A lightweight Laravel trait that gives any class a `make()` static constructor (resolved through the container) and a `fake()` method for easy test mocking.
 
-> **Note:** This package is currently in `0.x` and the API may change before a stable `1.0` release.
-
 ## Installation
 
 ```bash
