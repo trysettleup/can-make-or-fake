@@ -1,7 +1,7 @@
 # CanMakeOrFake
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/settleup/can-make-or-fake.svg?style=flat-square)](https://packagist.org/packages/settleup/can-make-or-fake)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/settleup/can-make-or-fake/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/settleup/can-make-or-fake/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/settleup/can-make-or-fake/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/trysettleup/can-make-or-fake/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/settleup/can-make-or-fake.svg?style=flat-square)](https://packagist.org/packages/settleup/can-make-or-fake)
 
 A lightweight Laravel trait that gives any class a `make()` static constructor (resolved through the container) and a `fake()` method for easy test mocking.
