@@ -3,6 +3,7 @@
     "description": "A simple helper for making classes easily instantiated and mocked.",
     "keywords": [
         "Settle Up",
+        "Try Settle Up",
         "laravel",
         "can-make-or-fake"
     ],
